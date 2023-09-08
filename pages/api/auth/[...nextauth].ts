@@ -1,17 +1,28 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import NextAuth from "next-auth/next";
+import NextAuth, { AuthOptions } from "next-auth";
 import prismadb from "@/lib/prismadb";
-import bcrypt from "bcrypt";
+import { compare } from "bcrypt";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
-export default NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
+    GithubProvider({
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
 
       credentials: {
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        email: { label: "Email", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -26,7 +37,8 @@ export default NextAuth({
         if (!user || !user.hashedPassword) {
           throw new Error("Email does not exist");
         }
-        const isCorrectPassword = await bcrypt.compare(
+
+        const isCorrectPassword = await compare(
           credentials.password,
           user.hashedPassword
         );
@@ -42,6 +54,7 @@ export default NextAuth({
     signIn: "/auth",
   },
   debug: process.env.NODE_ENV === "development",
+  adapter: PrismaAdapter(prismadb),
   session: {
     strategy: "jwt",
   },
@@ -49,4 +62,9 @@ export default NextAuth({
     secret: process.env.NEXTAUTH_JWT_SECRET,
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const authHandler = NextAuth(authOptions);
+export default async function handler(...params: any[]) {
+  await authHandler(...params);
+}
