@@ -3,7 +3,6 @@ import prismadb from "@/lib/prismadb";
 
 import { without } from "lodash";
 import serverAuth from "@/lib/serverAuth";
-import { json } from "stream/consumers";
 
 export default async function handler(
   req: NextApiRequest,
