@@ -25,7 +25,7 @@ export async function getServerSideProps(context: NextPageContext) {
   };
 }
 
-function Auth() {
+const Auth = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -93,6 +93,7 @@ function Auth() {
               {variant === "register" && (
                 <Input
                   label="Username"
+                  type="text"
                   onChange={onChangeName}
                   id="name"
                   value={name}
@@ -150,6 +151,6 @@ function Auth() {
       </div>
     </div>
   );
-}
+};
 
 export default Auth;
