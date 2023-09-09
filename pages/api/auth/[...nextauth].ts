@@ -1,4 +1,4 @@
-import CredentialsProvider from "next-auth/providers/credentials";
+import Credentials from "next-auth/providers/credentials";
 import NextAuth, { AuthOptions } from "next-auth";
 import prismadb from "@/lib/prismadb";
 import { compare } from "bcrypt";
@@ -16,7 +16,7 @@ export const authOptions: AuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
-    CredentialsProvider({
+    Credentials({
       id: "credentials",
       name: "Credentials",
 
@@ -64,7 +64,9 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-const authHandler = NextAuth(authOptions);
-export default async function handler(...params: any[]) {
-  await authHandler(...params);
-}
+// const authHandler = NextAuth(authOptions);
+// export default async function handler(...params: any[]) {
+//   await authHandler(...params);
+// }
+
+export default NextAuth(authOptions);
