@@ -1,11 +1,32 @@
 import React, { useCallback, useState } from "react";
 import axios from "axios";
+import { NextPageContext } from "next";
+import { useRouter } from "next/router";
 import Input from "@/components/Input";
-import { signIn } from "next-auth/react";
+
+import { getSession, signIn } from "next-auth/react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
+export async function getServerSideProps(context: NextPageContext) {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}
+
 function Auth() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -35,12 +56,14 @@ function Auth() {
       await signIn("credentials", {
         email,
         password,
-        callbackUrl: "/profiles",
+        redirect: false,
+        callbackUrl: "/",
       });
+      router.push("/profiles");
     } catch (error) {
       console.log(error);
     }
-  }, [email, password]);
+  }, [email, password, router]);
 
   const register = useCallback(async () => {
     try {

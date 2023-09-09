@@ -1,14 +1,9 @@
 import useSwr from "swr";
-import { useSession } from "next-auth/react";
 
 import fetcher from "@/lib/fetcher";
 
 const useCurrentUser = () => {
-  const { data: session } = useSession();
-  const { data, error, isLoading, mutate } = useSwr(
-    `/api/users/${session?.user?.email}`,
-    fetcher
-  );
+  const { data, error, isLoading, mutate } = useSwr("/api/current", fetcher);
   return {
     data,
     error,

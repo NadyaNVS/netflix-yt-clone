@@ -2,7 +2,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { NextPageContext } from "next";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useCallback } from "react";
 
 export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession(context);
@@ -20,10 +20,13 @@ export async function getServerSideProps(context: NextPageContext) {
   };
 }
 
-function Profiles() {
-  const onAvatarClick = () => router.push("/");
+const App = () => {
   const router = useRouter();
-  const { data: user } = useCurrentUser();
+  const { data: currentUser } = useCurrentUser();
+  const onAvatarClick = useCallback(() => {
+    router.push("/");
+  }, [router]);
+
   return (
     <div className="flex items-center h-full justify-center">
       <div className="flex flex-col">
@@ -37,7 +40,7 @@ function Profiles() {
                 <img src="/images/default-blue.png" alt="your avatar" />
               </div>
               <div className="mt-4 text-gray-400 text-2xl text-center group-hover:text-white">
-                {user?.name}
+                {currentUser?.name}
               </div>
             </div>
           </div>
@@ -45,6 +48,6 @@ function Profiles() {
       </div>
     </div>
   );
-}
+};
 
-export default Profiles;
+export default App;
